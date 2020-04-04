@@ -12,7 +12,7 @@ function App({ history, location }) {
 
   return (
     <>
-      <Nav />
+      <Nav auth={auth} />
       <div className="body">
         <Route path="/" exact render={() => <Home auth={auth} />} />
         <Route

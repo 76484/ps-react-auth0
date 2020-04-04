@@ -34,6 +34,13 @@ export default class Auth {
     this.auth0.authorize();
   };
 
+  logout = () => {
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("id_token");
+    localStorage.removeItem("expires_at");
+    this.history.push("/");
+  };
+
   setSession = (authResult) => {
     // set the time that the access token will expire
     const expiresAt = JSON.stringify(authResult.expiresIn * 1000 + Date.now());
