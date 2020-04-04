@@ -5,6 +5,7 @@ import Callback from "./Callback";
 import Home from "./Home";
 import Profile from "./Profile";
 import Nav from "./Nav";
+import Public from "./Public";
 import Auth from "./Auth/Auth";
 
 function App({ history, location }) {
@@ -29,6 +30,7 @@ function App({ history, location }) {
             )
           }
         />
+        <Route path="/public" component={Public} />
       </div>
     </>
   );
