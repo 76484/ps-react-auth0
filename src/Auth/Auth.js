@@ -25,6 +25,11 @@ export default class Auth {
     });
   };
 
+  isAuthenticated() {
+    const expiresAt = JSON.parse(localStorage.getItem("expires_at"));
+    return Date.now() < expiresAt;
+  }
+
   login = () => {
     this.auth0.authorize();
   };
