@@ -23,16 +23,18 @@ export default class Auth {
     return accessToken;
   };
 
-  getProfile = callback => {
-    if (this.userProfile) { return callback(null, this.userProfile); }
+  getProfile = (callback) => {
+    if (this.userProfile) {
+      return callback(null, this.userProfile);
+    }
 
     this.auth0.client.userInfo(this.getAccessToken(), (err, profile) => {
       if (profile) {
         this.userProfile = profile;
       }
       callback(err, profile);
-    }
-  }
+    });
+  };
 
   handleAuthentication = () => {
     this.auth0.parseHash((err, authResult) => {
