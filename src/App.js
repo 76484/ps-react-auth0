@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Route } from "react-router-dom";
 
 import AuthContext from "./AuthContext";
@@ -14,8 +14,17 @@ import Auth from "./Auth/Auth";
 
 function App({ history, location }) {
   const [auth] = useState(new Auth(history));
+  const [tokenRenewalComplete, setTokenRenewalComplete] = useState(false);
 
-  return (
+  useEffect(() => {
+    auth.renewToken(() => {
+      setTokenRenewalComplete(true);
+    });
+  }, [auth]);
+
+  return !tokenRenewalComplete ? (
+    "Loading..."
+  ) : (
     <AuthContext.Provider value={auth}>
       <Nav auth={auth} />
       <div className="body">

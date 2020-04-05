@@ -2,6 +2,12 @@ import auth0 from "auth0-js";
 
 const REDIRECT_ON_LOGIN = "redirect_on_login";
 
+let _accessToken = null;
+let _expiresAt = null;
+// eslint-disable-next-line
+let _idToken = null;
+let _scopes = null;
+
 export default class Auth {
   constructor(history) {
     this.history = history;
@@ -18,13 +24,11 @@ export default class Auth {
   }
 
   getAccessToken = () => {
-    const accessToken = localStorage.getItem("access_token");
-
-    if (!accessToken) {
+    if (!_accessToken) {
       throw new Error("No access token found.");
     }
 
-    return accessToken;
+    return _accessToken;
   };
 
   getProfile = (callback) => {
@@ -57,8 +61,7 @@ export default class Auth {
   };
 
   isAuthenticated() {
-    const expiresAt = JSON.parse(localStorage.getItem("expires_at"));
-    return Date.now() < expiresAt;
+    return Date.now() < _expiresAt;
   }
 
   login = () => {
@@ -70,12 +73,10 @@ export default class Auth {
   };
 
   logout = () => {
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("id_token");
-    localStorage.removeItem("expires_at");
-    localStorage.removeItem("scopes");
-
-    this.userProfile = null;
+    _accessToken = null;
+    _expiresAt = null;
+    _idToken = null;
+    _scopes = null;
 
     this.auth0.logout({
       clientId: process.env.REACT_APP_AUTH0_CLIENTID,
@@ -83,23 +84,37 @@ export default class Auth {
     });
   };
 
+  renewToken(callback) {
+    this.auth0.checkSession({}, (err, result) => {
+      if (err) {
+        console.log(`Error: ${err.error} - ${err.error_description}.`);
+      } else {
+        this.setSession(result);
+      }
+      if (callback) {
+        callback(err, result);
+      }
+    });
+  }
+
+  scheduleTokenRenewal() {
+    const delay = _expiresAt - Date.now();
+    if (delay > 0) {
+      setTimeout(() => {
+        this.renewToken();
+      }, delay);
+    }
+  }
+
   setSession = (authResult) => {
-    // set the time that the access token will expire
-    const expiresAt = JSON.stringify(authResult.expiresIn * 1000 + Date.now());
-
-    const scopes = authResult.scope || this.requestedScopes || "";
-
-    localStorage.setItem("access_token", authResult.accessToken);
-    localStorage.setItem("id_token", authResult.idToken);
-    localStorage.setItem("expires_at", expiresAt);
-    localStorage.setItem("scopes", JSON.stringify(scopes));
+    _accessToken = authResult.accessToken;
+    _expiresAt = authResult.expiresIn * 1000 + Date.now();
+    _idToken = authResult.idToken;
+    _scopes = authResult.scope || this.requestedScopes || "";
+    this.scheduleTokenRenewal();
   };
 
   userHasScopes(scopes) {
-    const grantedScopes = (
-      JSON.parse(localStorage.getItem("scopes")) || ""
-    ).split(" ");
-
-    return scopes.every((scope) => grantedScopes.includes(scope));
+    return scopes.every((scope) => _scopes.includes(scope));
   }
 }
