@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Route } from "react-router-dom";
 
+import AuthContext from "./AuthContext";
 import Callback from "./Callback";
 import Courses from "./Courses";
 import Home from "./Home";
@@ -15,7 +16,7 @@ function App({ history, location }) {
   const [auth] = useState(new Auth(history));
 
   return (
-    <>
+    <AuthContext.Provider value={auth}>
       <Nav auth={auth} />
       <div className="body">
         <Route path="/" exact render={() => <Home auth={auth} />} />
@@ -23,17 +24,16 @@ function App({ history, location }) {
           path="/callback"
           render={() => <Callback auth={auth} location={location} />}
         />
-        <PrivateRoute path="/profile" component={Profile} auth={auth} />
+        <PrivateRoute path="/profile" component={Profile} />
         <Route path="/public" component={Public} />
-        <PrivateRoute path="/private" component={Private} auth={auth} />
+        <PrivateRoute path="/private" component={Private} />
         <PrivateRoute
           path="/courses"
           component={Courses}
-          auth={auth}
           scopes={["read:courses"]}
         />
       </div>
-    </>
+    </AuthContext.Provider>
   );
 }
 
