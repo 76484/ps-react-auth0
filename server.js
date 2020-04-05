@@ -19,9 +19,27 @@ const checkJwt = jwt({
   }),
 });
 
+const checkRole = (role) => {
+  return function (req, res, next) {
+    const assignedRoles = req.user["http://localhost:3000/roles"];
+
+    if ((assignedRoles || []).includes(role)) {
+      return next();
+    } else {
+      return res.status(401).send("Insufficient role");
+    }
+  };
+};
+
 app.get("/public", function (req, res) {
   res.json({
     message: "Hello from a public API!",
+  });
+});
+
+app.get("/admin", checkJwt, checkRole("admin"), function (req, res) {
+  res.json({
+    message: "Hello from admin API!",
   });
 });
 
