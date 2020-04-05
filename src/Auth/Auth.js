@@ -5,6 +5,7 @@ export default class Auth {
     this.history = history;
     this.userProfile = null;
     this.auth0 = new auth0.WebAuth({
+      audience: process.env.REACT_APP_AUTH0_AUDIENCE,
       domain: process.env.REACT_APP_AUTH0_DOMAIN,
       clientID: process.env.REACT_APP_AUTH0_CLIENTID,
       redirectUri: process.env.REACT_APP_AUTH0_REDIRECT_URI,

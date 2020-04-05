@@ -16,6 +16,11 @@ function Nav({ auth }) {
         <li>
           <Link to="/public">Public</Link>
         </li>
+        {isAuthenticated() && (
+          <li>
+            <Link to="/private">Private</Link>
+          </li>
+        )}
         <li>
           <button onClick={isAuthenticated() ? logout : login}>
             {isAuthenticated() ? "Log out" : "Log In"}
