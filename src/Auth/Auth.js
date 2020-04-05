@@ -86,7 +86,7 @@ export default class Auth {
     localStorage.setItem("scopes", JSON.stringify(scopes));
   };
 
-  userHasScope(scopes) {
+  userHasScopes(scopes) {
     const grantedScopes = (
       JSON.parse(localStorage.getItem("scopes")) || ""
     ).split(" ");
