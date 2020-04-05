@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 function Nav({ auth }) {
-  const { isAuthenticated, login, logout } = auth;
+  const { isAuthenticated, login, logout, userHasScopes } = auth;
 
   return (
     <nav>
@@ -19,6 +19,11 @@ function Nav({ auth }) {
         {isAuthenticated() && (
           <li>
             <Link to="/private">Private</Link>
+          </li>
+        )}
+        {isAuthenticated() && userHasScopes(["read:courses"]) && (
+          <li>
+            <Link to="/courses">Courses</Link>
           </li>
         )}
         <li>
