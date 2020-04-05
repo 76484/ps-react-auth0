@@ -1,6 +1,7 @@
 const express = require("express");
 const jwt = require("express-jwt");
 const jwksRsa = require("jwks-rsa");
+const checkScope = require("express-jwt-authz");
 
 require("dotenv").config();
 
@@ -27,6 +28,18 @@ app.get("/public", function (req, res) {
 app.get("/private", checkJwt, function (req, res) {
   res.json({
     message: "Hello from a private API!",
+  });
+});
+
+app.get("/courses", checkJwt, checkScope(["read:courses"]), function (
+  req,
+  res
+) {
+  res.json({
+    courses: [
+      { id: 1, title: "Building Apps with React and Redux" },
+      { id: 2, title: "Creating Reusable React Components" },
+    ],
   });
 });
 
