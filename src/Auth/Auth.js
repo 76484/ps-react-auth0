@@ -85,4 +85,12 @@ export default class Auth {
     localStorage.setItem("expires_at", expiresAt);
     localStorage.setItem("scopes", JSON.stringify(scopes));
   };
+
+  userHasScope(scopes) {
+    const grantedScopes = (
+      JSON.parse(localStorage.getItem("scopes")) || ""
+    ).split(" ");
+
+    return scopes.every((scope) => grantedScopes.includes(scope));
+  }
 }
